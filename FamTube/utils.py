@@ -1,3 +1,4 @@
+# Converts Objects to list of dictionaries
 def video_objects_to_response(video_objects):
 
 	video_list = []

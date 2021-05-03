@@ -1,12 +1,7 @@
-from apiclient.discovery import build
-from FamTube.constants import *
-import json
-import datetime
-from FamTube.models import *
-
+# Fetches information of Youtube video's and stores it
 def FetchVideosAndStore():
 
-	print("INSIDE")
+	print("Inside FetchVideosAndStore Cronjob")
 
 	from apiclient.discovery import build
 	from FamTube.constants import API_KEYS, QUERY, INTERVAL_MINUTES
@@ -21,7 +16,7 @@ def FetchVideosAndStore():
 
 			youtube = build('youtube','v3',developerKey=API_KEY)
 
-			# Fetch all videos published in this interval 
+			# Fetch all videos published after this datetime
 			new_interval_start_time = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=INTERVAL_MINUTES)
 			new_interval_start_time_string = str(new_interval_start_time.strftime("%Y-%m-%dT%H:%M:%SZ"))
 
@@ -39,6 +34,7 @@ def FetchVideosAndStore():
 					channel_title = str(video["snippet"]["channelTitle"])
 					thumbnail_url = str(video["snippet"]["thumbnails"]["default"]["url"])
 
+					# Create Object
 					Video.objects.create(
 						published_at=published_at,
 						title=title,
@@ -46,7 +42,7 @@ def FetchVideosAndStore():
 						channel_title=channel_title,
 						thumbnail_url=thumbnail_url)
 
-				# Project whose API_KEY has not exceeded the quota
+				# Google Project whose API_KEY has not exceeded the quota
 				is_api_key_valid = True
 				break
 
@@ -57,6 +53,7 @@ def FetchVideosAndStore():
 				reason = str(http_error["error_details"][0]["reason"])
 				print("ERROR: ", reason)
 
+		# None of the API Key worked
 		if(is_api_key_valid == False):
 			print("ERROR: Could Not Fetch Videos")
 
