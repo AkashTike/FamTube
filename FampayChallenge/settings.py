@@ -24,9 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '-a-%^##twe6xp6s96fuo$5yic-=p&50=hsld+r%)yq*@s454jn'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -85,7 +85,7 @@ DATABASES = {
 }
 
 CRONJOBS = [
-    ('*/'+str(INTERVAL_MINUTES)+' * * * *', 'FamTube.cron.FetchVideosAndStore', '>> ~/Desktop/Desktop/Projects/FampayChallenge/temp.log')
+    ('*/'+str(INTERVAL_MINUTES)+' * * * *', 'FamTube.cron.FetchVideosAndStore', '>> ~/cron.log')
 ]
 
 # Password validation
