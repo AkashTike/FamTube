@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from FamTube.constants import INTERVAL_MINUTES
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,13 +32,15 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles'
+    'django.contrib.staticfiles',
     'FamTube',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -81,6 +84,9 @@ DATABASES = {
     }
 }
 
+CRONJOBS = [
+    ('*/'+str(INTERVAL_MINUTES)+' * * * *', 'FamTube.cron.FetchVideosAndStore', '>> ~/Desktop/Desktop/Projects/FampayChallenge/temp.log')
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -112,7 +118,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

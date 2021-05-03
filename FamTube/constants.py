@@ -1,0 +1,9 @@
+API_KEYS = [
+
+"AIzaSyDCMtdUC8vGU2AE6v9jhWH9IjJrXdQc5wE",
+"AIzaSyBUoNdXfiRSCOHTe-n8i62mCOm2CgHYYh4"
+]
+
+QUERY = "news"
+
+INTERVAL_MINUTES = 15
