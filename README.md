@@ -37,18 +37,13 @@ Install the dependencies
 pip install -r requirements.txt
 ```
 
-Make Migrations & Migrate
-
-```sh
-python manage.py makemigrations
-python manage.py migrate
-```
-
 Add Cronjob to store video information
 
 ```sh
 python manage.py crontab add
 ```
+
+- Note: Database is added to assist in getting a better picture. Hence, no need to do makemigrations or migrate.
 
 ## Run
 
