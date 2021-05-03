@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+<body style="background-color: #f2f2f2;">
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+<script type="text/javascript">
+		 
+</script>
+
+		<nav>
+			<div class="nav-wrapper black" >
+				<a href="/dashboard" class="brand-logo center" >FamTube</a>
+			</div>
+		</nav>
+
+	<br>
+	<br>
+
+	<div class="container">
+				
+		<div class="row">
+			
+			<div class="input-field col s6 offset-s3">
+				<i class="material-icons prefix">search</i>
+				<input type="text" id="search_id">
+				<label for="search_id">Search Videos on FamTube</label>
+			</div>	        
+			<div class="input-field col s3">
+				  <a class="btn-floating btn-large waves-effect waves-light red" id="search_btn"><i class="material-icons">search</i>search</a>
+			</div>
+
+			<p style="padding-left: 10px;color:black;font-size:1.1em;" id="show_current_search_id"> </p>
+
+		</div>
+
+
+
+		<div class="center">
+				
+			<ul class="pagination">
+				<li class="waves-effect" id="left_btn"><a href="#!"><i class="material-icons grey lighten-2">chevron_left</i></a></li>
+				<li class="active" ><a href="#!" style="cursor: text" id="page_num_id">1</a></li>
+				<li class="waves-effect" id="right_btn"><a href="#!"><i class="material-icons grey lighten-2">chevron_right</i></a></li>
+			</ul>
+
+		</div>
+
+		<div class="row" id="video_container_id">
+		</div>
+
+	</div>
+
+	<br>
+	<br>
+
+<script>
+
+
+var query = "";
+var page = 1;
+var query_type = 2;
+var next_page = false;
+
+$("#search_btn").click(function(){
+
+	query = document.getElementById("search_id").value;
+	
+	$("#show_current_search_id").text("Now Searching: " + query);
+	query_type = 1;
+	UpdatePage(1);
+	Search(query, page);
+});
+
+$("#left_btn").click(function(){
+
+	if(page > 1){
+		UpdatePage(page-1);
+		if(query_type == 1)
+			Search(query,page);
+		else if(query_type == 2)
+			GetAllVideos(page);
+	}
+	else{
+		M.toast({html:"Reached the Beginning!"});
+	}
+});
+
+$("#right_btn").click(function(){
+
+	if(next_page){
+		UpdatePage(page+1);
+		if(query_type == 1)
+			Search(query,page);
+		else if(query_type == 2)
+			GetAllVideos(page);
+	}
+	else{
+		M.toast({html:"Reached the End!"});
+	}
+});
+
+function UpdatePage(page_num){
+
+	page = page_num;
+	$("#page_num_id").text(page_num);
+}
+
+function ShowVideos(response){
+
+	$("#video_container_id").empty();
+	videos = response["videos"];
+	next_page = response["next_page"];
+
+	for(var i=0;i<videos.length;i++){
+
+		title = videos[i]["title"];
+		channel_title = videos[i]["channel_title"];
+		date = videos[i]["published_at"].split(" ");
+		description = videos[i]["description"];
+		thumbnail_url = videos[i]["thumbnail_url"];		
+
+		var temp = '<div class="card" style="margin:1%;width:22%;display:inline-block;">\
+			<div class="card-image waves-effect waves-block waves-light" style="padding:10px">\
+				<img class="activator" height="150px" src="'+thumbnail_url+'">\
+			</div>\
+			<div class="card-content" style="padding:10px">\
+			  <span class="card-title activator grey-text text-darken-4"\ style="font-size:1em;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;">\
+			  	'+title+'</span>\
+			  	<i class="material-icons activator right" style="cursor: pointer">more_vert</i>\
+			  <p style="color:grey;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;font-weight:bold;">'+channel_title+'</p>\
+			  <p style="color:grey;font-size: 0.4em;">'+date[1].substr(0, 5)+' , '+date[0]+'</p>\
+			</div>\
+			<div class="card-reveal">\
+			  <span class="card-title grey-text text-darken-4" style="font-size: 1.1em;">'+title+'<i class="material-icons right">close</i></span>\
+			  <p>'+description+'</p>\
+			</div>\
+	  	</div>';
+	  	$("#video_container_id").append(temp);
+	}
+}
+
+function Search(query, page_num){
+
+	if(query == ""){
+			
+		M.toast({html:"Cannot Search Empty String!"});
+		return;		
+	}
+
+	$.ajax({
+			url:"/api/search",
+			data: {
+				"query" : query,
+				"page" : page_num
+			},
+			type:"POST",
+			success: function(response){
+
+				ShowVideos(response)
+			},
+			error: function(xhr, a, b){
+				console.log("Error");
+			}
+	});
+}
+
+function GetAllVideos(page_num){
+
+	$.ajax({
+			url:"/api/videos",
+			data: {
+				"page" : page_num
+			},
+			type:"GET",
+			success: function(response){
+
+				ShowVideos(response)
+			},
+			error: function(xhr, a, b){
+				console.log("Error");
+			}
+	});
+}
+	
+GetAllVideos(page);
+
+</script>
+
+<div class="container black" style="margin-bottom: 50px;color:white;width:100%;padding:10px">
+	
+	<p>This project is developed as a part of FamPay hiring challenge. <a href=""> View Documentation</a></p>
+	<p>-Akash Tike</p>
+
+</div>
+
+</body>
+</html>
